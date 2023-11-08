@@ -49,7 +49,7 @@ def to_excel(df):
     return processed_data
 
 # Streamlit interface setup
-st.title('Image Chasing Report Generator')
+st.title('BMS Report Cleaner - Job Listing Report')
 
 
 with st.expander("How do I run the report?"):
