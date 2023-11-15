@@ -11,19 +11,12 @@ GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 
 
 
-def push_to_github(df, file_name, repo_name, branch_name="main"):
+def push_to_github(file_content, file_name, repo_name, branch_name="main"):
     st.write("Pushing to GitHub...")
     g = Github(GITHUB_TOKEN)
     repo = g.get_repo(repo_name)
-    
-    # Convert DataFrame to Excel in-memory
-    output = BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        df.to_excel(writer, index=False)
-        writer.save()
-    file_content = output.getvalue()
 
-    # Encoding file content to Base64
+    # Assume file_content is already a bytes-like object
     encoded_content = base64.b64encode(file_content).decode()
     st.write("File encoded")
 
@@ -34,12 +27,11 @@ def push_to_github(df, file_name, repo_name, branch_name="main"):
     try:
         contents = repo.get_contents(path, ref=branch_name)
         repo.update_file(path, commit_message, encoded_content, contents.sha, branch=branch_name)
-        print(f"File {file_name} updated in {repo_name} on branch {branch_name}")
-        st.write("File updated")
+        st.write(f"File {file_name} updated in {repo_name} on branch {branch_name}")
     except Exception as e:
         repo.create_file(path, commit_message, encoded_content, branch=branch_name)
-        print(f"File {file_name} created in {repo_name} on branch {branch_name}")
-        st.write("File created, exception encountered: " + str(e))
+        st.write(f"File {file_name} created in {repo_name} on branch {branch_name}, exception encountered: " + str(e))
+
 
 
 
