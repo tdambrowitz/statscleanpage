@@ -140,9 +140,6 @@ if uploaded_file is not None:
 )
     
 
-    # Process file
-    processed_data = process_data(uploaded_file)
-
     # Convert processed DataFrame to CSV format
     processed_csv_data = to_csv_bytes(processed_data)
 
