@@ -37,6 +37,25 @@ def process_data(uploaded_file):
     # Reset index for cleaner output
     df.reset_index(drop=True, inplace=True)
 
+        
+
+            # Specify the datetime format used in your Excel file
+    current_date = datetime.now().date()
+    # Assuming df is your DataFrame
+    extracted_data = df[['Job Number', 'Location', 'Vehicle Registration', 'Insurer', 'Arrived On Site Date/Time', 'Left Site Date/Time', 'OnSite-WSComp', 'Arrival', 'WS Completed Date/Time']].copy()
+
+    # Converting date/time columns to datetime format
+    date_time_columns = ['Arrived On Site Date/Time', 'Left Site Date/Time', 'WS Completed Date/Time']
+    datetime_format = "%d/%m/%Y %H:%M"
+
+    for col in date_time_columns:
+        if col in extracted_data.columns:
+            extracted_data.loc[:, col] = pd.to_datetime(extracted_data[col], format=datetime_format, errors='coerce')
+
+    # Your existing calculations
+    extracted_data['Key to Key'] = (extracted_data['Left Site Date/Time'] - extracted_data['Arrived On Site Date/Time']).apply(lambda x: x.days + (x.seconds / 86400) if pd.notnull(x) else None).astype(float)
+    df['Key to Key'] = extracted_data['Key to Key']
+
     return df
 
 
