@@ -11,11 +11,18 @@ GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 
 
 
-def push_to_github(file_content, file_name, repo_name, branch_name="main"):
+def push_to_github(df, file_name, repo_name, branch_name="main"):
     st.write("Pushing to GitHub...")
     g = Github(GITHUB_TOKEN)
     repo = g.get_repo(repo_name)
     
+    # Convert DataFrame to Excel in-memory
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False)
+        writer.save()
+    file_content = output.getvalue()
+
     # Encoding file content to Base64
     encoded_content = base64.b64encode(file_content).decode()
     st.write("File encoded")
@@ -115,6 +122,7 @@ with st.expander("How do I run the report?"):
 
 uploaded_file = st.file_uploader("Upload your CSV file", type=['csv'])
 
+
 # When a file is uploaded, process and display the data
 if uploaded_file is not None:
     # Process file
@@ -131,5 +139,10 @@ if uploaded_file is not None:
         file_name="processed_data.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
-    push_to_github(processed_data, "processed_data.xlsx", "tdambrowitz/KPIs-and-Stats")
+    
+    # Convert processed DataFrame to Excel format
+    processed_excel_data = to_excel(processed_data)
+
+    # Push to GitHub
+    push_to_github(processed_excel_data, "processed_data.xlsx", "tdambrowitz/KPIs-and-Stats")
     st.write("Data pushed to GitHub")
