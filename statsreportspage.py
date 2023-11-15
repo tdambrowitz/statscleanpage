@@ -3,6 +3,33 @@ import streamlit as st
 import re
 from io import BytesIO
 from datetime import datetime, timedelta, date
+from github import Github, InputFileContent
+import base64
+
+# Include your token in an environment variable for safety
+GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
+
+
+
+def push_to_github(file_content, file_name, repo_name, branch_name="main"):
+    g = Github(GITHUB_TOKEN)
+    repo = g.get_repo(repo_name)
+    
+    # Encoding file content to Base64
+    encoded_content = base64.b64encode(file_content).decode()
+
+    commit_message = f"Add processed data"
+    path = f"{file_name}"  # Adjust path as needed
+
+    try:
+        contents = repo.get_contents(path, ref=branch_name)
+        repo.update_file(path, commit_message, encoded_content, contents.sha, branch=branch_name)
+        print(f"File {file_name} updated in {repo_name} on branch {branch_name}")
+    except Exception as e:
+        repo.create_file(path, commit_message, encoded_content, branch=branch_name)
+        print(f"File {file_name} created in {repo_name} on branch {branch_name}")
+
+
 
 # Function to process data
 def process_data(uploaded_file):
@@ -99,3 +126,4 @@ if uploaded_file is not None:
         file_name="processed_data.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
+    push_to_github(processed_data, "processed_data.xlsx", "tdambrowitz/KPIs-and-Stats")
