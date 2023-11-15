@@ -141,9 +141,9 @@ if uploaded_file is not None:
     
 
     # Convert processed DataFrame to CSV format
-    processed_csv_data = to_csv_bytes(processed_data)
+    #processed_csv_data = to_csv_bytes(processed_data)
 
     # Push to GitHub
-    push_to_github(processed_csv_data, "processed_data.csv", "tdambrowitz/KPIs-and-Stats")
+    #push_to_github(processed_csv_data, "processed_data.csv", "tdambrowitz/KPIs-and-Stats")
 
-    st.write("Data pushed to GitHub")
+    #st.write("Data pushed to GitHub")
