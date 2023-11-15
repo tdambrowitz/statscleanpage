@@ -11,12 +11,18 @@ GITHUB_TOKEN = st.secrets["GITHUB_TOKEN"]
 
 
 
+def to_csv_bytes(df):
+    output = BytesIO()
+    df.to_csv(output, index=False)
+    return output.getvalue()
+
+
 def push_to_github(file_content, file_name, repo_name, branch_name="main"):
     st.write("Pushing to GitHub...")
     g = Github(GITHUB_TOKEN)
     repo = g.get_repo(repo_name)
 
-    # Assume file_content is already a bytes-like object
+    # Encoding file content to Base64
     encoded_content = base64.b64encode(file_content).decode()
     st.write("File encoded")
 
@@ -31,6 +37,7 @@ def push_to_github(file_content, file_name, repo_name, branch_name="main"):
     except Exception as e:
         repo.create_file(path, commit_message, encoded_content, branch=branch_name)
         st.write(f"File {file_name} created in {repo_name} on branch {branch_name}, exception encountered: " + str(e))
+
 
 
 
@@ -132,9 +139,14 @@ if uploaded_file is not None:
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
     
-    # Convert processed DataFrame to Excel format
-    processed_excel_data = to_excel(processed_data)
+
+    # Process file
+    processed_data = process_data(uploaded_file)
+
+    # Convert processed DataFrame to CSV format
+    processed_csv_data = to_csv_bytes(processed_data)
 
     # Push to GitHub
-    push_to_github(processed_excel_data, "processed_data.xlsx", "tdambrowitz/KPIs-and-Stats")
+    push_to_github(processed_csv_data, "processed_data.csv", "tdambrowitz/KPIs-and-Stats")
+
     st.write("Data pushed to GitHub")
