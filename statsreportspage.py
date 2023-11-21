@@ -82,7 +82,8 @@ def process_data(uploaded_file):
     current_date = datetime.now().date()
     # Assuming df is your DataFrame
     extracted_data = df[['Job Number', 'Location', 'Vehicle Registration', 'Insurer', 'Arrived On Site Date/Time', 'Left Site Date/Time', 'OnSite-WSComp', 'Arrival', 'WS Completed Date/Time']].copy()
-
+    
+    
     # Converting date/time columns to datetime format
     date_time_columns = ['Arrived On Site Date/Time', 'Left Site Date/Time', 'WS Completed Date/Time']
     datetime_format = "%d/%m/%Y %H:%M"
@@ -91,12 +92,16 @@ def process_data(uploaded_file):
         if col in extracted_data.columns:
             extracted_data.loc[:, col] = pd.to_datetime(extracted_data[col], format=datetime_format, errors='coerce')
 
+    # Extracting just the date part for 'Left Site Date/Time'
+    extracted_data['Left Site Date'] = extracted_data['Left Site Date/Time'].dt.date
+
     # Your existing calculations
     extracted_data['Key to Key'] = (extracted_data['Left Site Date/Time'] - extracted_data['Arrived On Site Date/Time']).apply(lambda x: x.days + (x.seconds / 86400) if pd.notnull(x) else None).astype(float)
     df['Key to Key'] = extracted_data['Key to Key']
 
-    return df
+    df['Left Site Date'] = extracted_data['Left Site Date']
 
+    return df
 
 def to_excel(df):
     output = BytesIO()
