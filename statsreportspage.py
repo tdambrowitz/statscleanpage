@@ -102,12 +102,12 @@ def process_data(uploaded_file):
 
 
         # Converting date/time columns to datetime format
-    date_columns = ['Left Site Date/Time']
-    date_format = "%d/%m/%Y"
+    #date_columns = ['Left Site Date/Time']
+    #date_format = "%d/%m/%Y"
 
-    for col in date_columns:
-        if col in left_site_original.columns:
-            left_site_original.loc[:, col] = pd.to_datetime(left_site_original[col], format=date_format, errors='coerce')
+    # Convert 'Left Site Date/Time' to datetime and then extract just the date part
+    left_site_original['Left Site Date/Time'] = pd.to_datetime(left_site_original['Left Site Date/Time'], dayfirst=True).dt.date
+
 
 
     # Repopulate the 'Left Site Date/Time' column in df with original values
