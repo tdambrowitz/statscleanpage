@@ -99,6 +99,17 @@ def process_data(uploaded_file):
     extracted_data['Key to Key'] = (extracted_data['Left Site Date/Time'] - extracted_data['Arrived On Site Date/Time']).apply(lambda x: x.days + (x.seconds / 86400) if pd.notnull(x) else None).astype(float)
     df['Key to Key'] = extracted_data['Key to Key']
 
+
+
+        # Converting date/time columns to datetime format
+    date_columns = ['Left Site Date/Time']
+    date_format = "%d/%m/%Y"
+
+    for col in date_columns:
+        if col in left_site_original.columns:
+            left_site_original.loc[:, col] = pd.to_datetime(left_site_original[col], format=date_format, errors='coerce')
+
+
     # Repopulate the 'Left Site Date/Time' column in df with original values
     df['Left Site Date/Time'] = left_site_original
 
