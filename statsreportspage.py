@@ -85,7 +85,6 @@ def process_data(uploaded_file):
 
     # Copy 'Left Site Date/Time' from df before conversion
     left_site_original = df['Left Site Date/Time'].copy()
-    st.write(left_site_original.head())
 
     # Converting date/time columns to datetime format
     date_time_columns = ['Arrived On Site Date/Time', 'Left Site Date/Time', 'WS Completed Date/Time']
