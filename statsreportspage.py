@@ -61,8 +61,14 @@ def process_data(uploaded_file):
     # Remove all empty rows
     df.dropna(how='all', inplace=True)
 
+    # Regular expression to match job numbers starting with one or two letters followed by numbers
+    regex_pattern = r'^[A-Za-z]{1,2}\d+'
+
+    # Filter out rows without valid job numbers
+    df = df[df["Job Number"].str.match(regex_pattern, na=False)]
+
     # Remove rows where the first cell doesn't start with a letter followed by a number
-    df = df[df[df.columns[0]].apply(lambda x: re.match(r'^[A-Za-z][0-9]', str(x)) is not None)]
+    #df = df[df[df.columns[0]].apply(lambda x: re.match(r'^[A-Za-z][0-9]', str(x)) is not None)]
     
     # Exclude rows with "HWARR" or "HALO" in the "Debtor" column
     df = df[~df["Insurer"].str.contains("HWARR|HALO|Unknown|BLOCK|OTHER", case=False, na=False)]
