@@ -48,7 +48,7 @@ def process_data(uploaded_file):
         uploaded_file,
         skiprows=2,
         usecols=range(69),  # Adjust range according to the structure of your CSV file.
-        nrows=6000,
+        nrows=50000,
     )
 
 
